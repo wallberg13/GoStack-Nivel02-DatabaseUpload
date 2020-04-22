@@ -1,0 +1,20 @@
+@host = http://localhost:3333/transactions
+
+### Criando uma transação
+POST {{host}}
+Content-Type: application/json
+
+{
+  "title": "Teste Salario",
+  "value": 5000,
+  "type": "income",
+  "category": "Receitas"
+}
+
+### GET
+GET {{host}}
+
+### DELETE
+DELETE {{host}}/b0191d9a-f9bf-4127-b5e2-2afe0585c066
+
+###
