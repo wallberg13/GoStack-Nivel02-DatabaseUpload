@@ -1,20 +1,21 @@
 import { Router } from "express";
 import { getCustomRepository } from "typeorm";
+import multer from "multer";
 import TransactionsRepository from "../repositories/TransactionsRepository";
 import CreateTransactionService from "../services/CreateTransactionService";
 import DeleteTransactionService from "../services/DeleteTransactionService";
-// import ImportTransactionsService from '../services/ImportTransactionsService';
+import ImportTransactionsService from "../services/ImportTransactionsService";
+
+import configUpload from "../config/upload";
 
 const transactionsRouter = Router();
+
+const fileUpload = multer(configUpload);
 
 transactionsRouter.get("/", async (request, response) => {
   const transactionsRepository = getCustomRepository(TransactionsRepository);
   const balance = await transactionsRepository.getBalance();
-  // const transactions = await transactionsRepository
-  //   .createQueryBuilder("transactions")
-  //   .leftJoinAndSelect("transactions.category", "category");
   const transactions = await transactionsRepository.find({
-    // select: ["id", "title", "value", "type", "category_id"],
     relations: ["category"],
   });
   return response.json({ transactions, balance });
@@ -43,8 +44,17 @@ transactionsRouter.delete("/:id", async (request, response) => {
   return response.status(204).send();
 });
 
-transactionsRouter.post("/import", async (request, response) => {
-  // TODO
-});
+transactionsRouter.post(
+  "/import",
+  fileUpload.single("file"),
+  async (request, response) => {
+    const { file } = request;
+
+    const importTransactionsService = new ImportTransactionsService();
+    const transactions = await importTransactionsService.execute(file.path);
+
+    return response.json(transactions);
+  },
+);
 
 export default transactionsRouter;
