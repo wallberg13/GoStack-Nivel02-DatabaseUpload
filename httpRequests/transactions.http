@@ -7,7 +7,7 @@ Content-Type: application/json
 {
   "title": "Teste Salario",
   "value": 5000,
-  "type": "income",
+  "type": "outcome",
   "category": "Others"
 }
 
